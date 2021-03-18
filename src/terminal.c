@@ -13,12 +13,14 @@ char get_char() {
 
 void terminal_headers() {
     erase();
-    fputs("Router simulation\n1 - ping\n\n0 - exit\n\n$ ", stdout);
+    printf("Router simulation - Router %d\n1 - neighbors\n\n0 - exit\n\n$ ", router_id);
 }
 
-void terminal_pongs() {
+void terminal_neighbors() {
     erase();
-    printf("Pong %d!\n\nPress enter...", (pongs++));
+    for (int i=0; i<neighbors_c; ++i)
+        printf("Neighbor %d: (id - %d) (cost - %d) (ip-port - unknown:unknown) (status - unknown)\n", i+1, neighbors[i], link_cost[neighbors[i]]);
+    printf("\nPress enter...\n");
     get_char();
 }
 
@@ -29,7 +31,7 @@ void terminal() {
         char input = get_char();
         switch (input) {
             case '1' :
-                terminal_pongs();
+                terminal_neighbors();
                 break;
             case '0' :
                 running = false;

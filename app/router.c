@@ -3,15 +3,30 @@
 #include <receiver.h>
 #include <sender.h>
 #include <packet_handler.h>
+#include <parse.h>
 
-int pongs=0;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 pthread_t receiver_thread;
 
-int main() {
+int router_id;
+int neighbors_c=0, neighbors[MAX_NEIGHBORS];
+int link_cost[MAX_NEIGHBORS];
+
+int main(int argc, char *argv[]) {
+    if (argc<2) {
+        fprintf(stderr, "Please use \"./Router <id>\"\n");
+        exit(1);
+    }
+
+    router_id = atoi(argv[1]);
+
+    parse_link();
+
     setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
 
-    pongs++;
     terminal();
 
     pthread_create(&receiver_thread, NULL, receiver, NULL);

@@ -8,10 +8,12 @@ add_library(sources
   src/receiver.c
   src/sender.c
   src/packet_handler.c
+  src/parse.c
 )
 include_directories(include)
 
-#configure_file(test_kernel.cl test_kernel.cl COPYONLY)
+configure_file(inputs/router.config.example router.config COPYONLY)
+configure_file(inputs/link.config.example link.config COPYONLY)
 
 add_executable(Router app/router.c)
 target_link_libraries(Router
