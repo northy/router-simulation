@@ -12,6 +12,13 @@
 pthread_t receiver_thread;
 
 int router_id;
+unsigned short router_port;
+char router_ip[16];
+
+int total_router_c=0;
+unsigned short external_router_port[MAX_NEIGHBORS];
+char external_router_ip[MAX_NEIGHBORS][16];
+
 int neighbors_c=0, neighbors[MAX_NEIGHBORS];
 int link_cost[MAX_NEIGHBORS];
 
@@ -24,6 +31,7 @@ int main(int argc, char *argv[]) {
     router_id = atoi(argv[1]);
 
     parse_link();
+    parse_router();
 
     setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
 

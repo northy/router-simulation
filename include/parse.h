@@ -2,6 +2,7 @@
 
 #include <global.h>
 #include <stdio.h>
+#include <string.h>
 
 extern void* sender(void* args);
 
