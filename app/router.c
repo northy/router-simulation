@@ -27,6 +27,10 @@ int link_cost[MAX_NEIGHBORS];
 
 int socket_descriptor;
 
+r_message received_messages[QUEUE_MAX];
+int received_messages_c = 0;
+pthread_mutex_t received_messages_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 int main(int argc, char *argv[]) {
     if (argc<2) {
         fprintf(stderr, "Please use \"./Router <id>\"\n");
@@ -55,6 +59,15 @@ int main(int argc, char *argv[]) {
         perror("Socket bind error");
         exit(1);
     }
+
+    //populate by hand one message
+    received_messages_c=1;
+    received_messages[0].type=0;
+    strcpy(received_messages[0].source_router_ip, "127.0.0.1");
+    strcpy(received_messages[0].destination_router_ip, "127.0.0.1");
+    received_messages[0].source_router_port = 25002;
+    received_messages[0].destination_router_port = 25001;
+    strcpy(received_messages[0].payload, "Hello world!");
 
     terminal();
 

@@ -13,7 +13,7 @@ char get_char() {
 
 void terminal_headers() {
     erase();
-    printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n\n0 - exit\n\n$ ", router_id);
+    printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages\n\n0 - exit\n\n$ ", router_id);
 }
 
 void terminal_neighbors() {
@@ -33,6 +33,18 @@ void terminal_send() {
     get_char();
 }
 
+void terminal_received() {
+    erase();
+    pthread_mutex_lock(&received_messages_mutex);
+    while (received_messages_c--) {
+        printf("%s:%hu sent: %s\n", received_messages[received_messages_c].source_router_ip, received_messages[received_messages_c].source_router_port, received_messages[received_messages_c].payload);
+    }
+    received_messages_c = 0;
+    pthread_mutex_unlock(&received_messages_mutex);
+    printf("\nPress enter...\n");
+    get_char();
+}
+
 void terminal() {
     bool running = true;
     while (running) {
@@ -44,6 +56,9 @@ void terminal() {
                 break;
             case '2' :
                 terminal_send();
+                break;
+            case '3' :
+                terminal_received();
                 break;
             case '0' :
                 running = false;
