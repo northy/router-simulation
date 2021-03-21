@@ -1,13 +1,12 @@
 #include <config.h>
 
-#include <arpa/inet.h>
-#include <sys/socket.h>
-
 //received message
 typedef struct {
     char type; //data = control; 1 = control
-    struct sockaddr_in source_router;
-    struct sockaddr_in destination_router;
+    char source_router_ip[16];
+    unsigned short source_router_port;
+    char destination_router_ip[16];
+    unsigned short destination_router_port;
     char payload[BUF_LEN];
 
 } r_message;
