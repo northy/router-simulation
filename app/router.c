@@ -7,7 +7,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 
 pthread_t receiver_thread;
 
@@ -22,6 +25,8 @@ char external_router_ip[MAX_NEIGHBORS][16];
 int neighbors_c=0, neighbors[MAX_NEIGHBORS];
 int link_cost[MAX_NEIGHBORS];
 
+int socket_descriptor;
+
 int main(int argc, char *argv[]) {
     if (argc<2) {
         fprintf(stderr, "Please use \"./Router <id>\"\n");
@@ -30,16 +35,36 @@ int main(int argc, char *argv[]) {
 
     router_id = atoi(argv[1]);
 
+    setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
+
     parse_link();
     parse_router();
 
-    setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
+    if ((socket_descriptor=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+        perror("Socket creation error");
+        exit(1);
+    }
+
+    struct sockaddr_in si_me;
+    memset((char *) &si_me, 0, sizeof(si_me));
+    si_me.sin_family = AF_INET;
+    si_me.sin_port = htons(router_port);
+    si_me.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    if(bind(socket_descriptor, (struct sockaddr*)&si_me, sizeof(si_me)) == -1) {
+        perror("Socket bind error");
+        exit(1);
+    }
 
     terminal();
 
     pthread_create(&receiver_thread, NULL, receiver, NULL);
     pthread_join(receiver_thread, NULL);
     printf("Receiver returned\n");
+
+    int true_v = 1;
+    setsockopt(socket_descriptor,SOL_SOCKET,SO_REUSEADDR,&true_v,sizeof(int));
+    close(socket_descriptor);
 
     return 0;
 }

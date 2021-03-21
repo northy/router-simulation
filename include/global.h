@@ -12,3 +12,5 @@ extern int neighbors_c, neighbors[MAX_NEIGHBORS];
 extern int total_router_c;
 extern unsigned short external_router_port[MAX_NEIGHBORS];
 extern char external_router_ip[MAX_NEIGHBORS][16];
+
+extern int socket_descriptor;
