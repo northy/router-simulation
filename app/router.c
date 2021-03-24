@@ -63,10 +63,8 @@ int main(int argc, char *argv[]) {
     //populate by hand one message
     received_messages_c=1;
     received_messages[0].type=0;
-    strcpy(received_messages[0].source_router_ip, "127.0.0.1");
-    strcpy(received_messages[0].destination_router_ip, "127.0.0.1");
-    received_messages[0].source_router_port = 25002;
-    received_messages[0].destination_router_port = 25001;
+    received_messages[0].source_router_id = 2;
+    received_messages[0].destination_router_id = 1;
     strcpy(received_messages[0].payload, "Hello world!");
 
     terminal();

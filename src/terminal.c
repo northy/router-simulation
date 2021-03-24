@@ -37,7 +37,7 @@ void terminal_received() {
     erase();
     pthread_mutex_lock(&received_messages_mutex);
     while (received_messages_c--) {
-        printf("%s:%hu sent: %s\n", received_messages[received_messages_c].source_router_ip, received_messages[received_messages_c].source_router_port, received_messages[received_messages_c].payload);
+        printf("%s:%hu sent: %s\n", external_router_ip[received_messages[received_messages_c].source_router_id], external_router_port[received_messages[received_messages_c].source_router_id], received_messages[received_messages_c].payload);
     }
     received_messages_c = 0;
     pthread_mutex_unlock(&received_messages_mutex);
