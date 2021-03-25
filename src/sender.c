@@ -14,7 +14,9 @@ void* sender(void* args) {
         while ((r = sem_wait(&sender_sem)) == -1 && errno == EINTR)
             continue; /* Restart if interrupted by handler */
         
-        if (DEBUG) printf("Sender entered!\n");
+        #if DEBUG
+            printf("Sender entered!\n");
+        #endif
 
         pthread_mutex_lock(&send_queue_mutex);
         m = TAILQ_FIRST(&send_queue_head);
@@ -22,7 +24,9 @@ void* sender(void* args) {
             TAILQ_REMOVE(&send_queue_head, m, entries);
             pthread_mutex_unlock(&send_queue_mutex);
 
-            if (DEBUG) printf("Sender got %s\n",m->item.payload);
+            #if DEBUG
+                printf("Sender got %s\n",m->item.payload);
+            #endif
 
             memset((char *) &si_other, 0, sizeof(si_other));
             si_other.sin_family = AF_INET;
