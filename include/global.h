@@ -2,6 +2,9 @@
 
 #include <structures.h>
 #include <pthread.h>
+#include <semaphore.h>
+
+extern char terminal_free;
 
 extern int router_id;
 extern unsigned short router_port;
@@ -19,3 +22,9 @@ extern int socket_descriptor;
 extern r_message received_messages[QUEUE_MAX];
 extern int received_messages_c;
 extern pthread_mutex_t received_messages_mutex;
+
+extern message_queue *process_queue, *send_queue;
+extern pthread_mutex_t process_queue_mutex, send_queue_mutex;
+extern TAILQ_HEAD(_message_queue_h, _message_queue) process_queue_head, send_queue_head;
+
+extern sem_t packet_handler_sem, sender_sem;

@@ -1,7 +1,28 @@
-#include <sender.h>
+#include <receiver.h>
+
+#include <stdio.h>
 
 void* receiver(void* args) {
-    printf("Receiver was called\n");
+    r_message buf;
+    struct sockaddr_in si_other;
+    int recv_len, slen = sizeof(si_other);
+    
+    for (;;) {
+        memset(&buf, 0, sizeof(buf));
 
+        if ((recv_len = recvfrom(socket_descriptor, &buf, sizeof(buf), 0, (struct sockaddr *) &si_other, &slen)) == -1) {
+            perror("Receiving socket");
+            exit(1);
+        }
+
+        message_queue* m = malloc(sizeof(message_queue));
+        memcpy(&m->item, &buf, sizeof(r_message));
+
+        pthread_mutex_lock(&process_queue_mutex);
+        TAILQ_INSERT_TAIL(&process_queue_head, m, entries);
+        pthread_mutex_unlock(&process_queue_mutex);
+        sem_post(&packet_handler_sem);
+    }
+    
     pthread_exit(NULL);
 }

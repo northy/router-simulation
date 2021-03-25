@@ -12,7 +12,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-pthread_t receiver_thread;
+pthread_t receiver_thread, packet_handler_thread, sender_thread;
 
 int router_id;
 unsigned short router_port;
@@ -31,6 +31,12 @@ r_message received_messages[QUEUE_MAX];
 int received_messages_c = 0;
 pthread_mutex_t received_messages_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+message_queue *process_queue, *send_queue;
+pthread_mutex_t process_queue_mutex = PTHREAD_MUTEX_INITIALIZER, send_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+struct _message_queue_h process_queue_head, send_queue_head;
+
+sem_t packet_handler_sem, sender_sem;
+
 int main(int argc, char *argv[]) {
     if (argc<2) {
         fprintf(stderr, "Please use \"./Router <id>\"\n");
@@ -44,6 +50,7 @@ int main(int argc, char *argv[]) {
     parse_link();
     parse_router();
 
+    //create socket
     if ((socket_descriptor=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
         perror("Socket creation error");
         exit(1);
@@ -59,19 +66,28 @@ int main(int argc, char *argv[]) {
         perror("Socket bind error");
         exit(1);
     }
+    
+    //inititate semaphores
+    sem_init(&packet_handler_sem, 0, 0);
+    sem_init(&sender_sem, 0, 0);
 
-    //populate by hand one message
-    received_messages_c=1;
-    received_messages[0].type=0;
-    received_messages[0].source_router_id = 2;
-    received_messages[0].destination_router_id = 1;
-    strcpy(received_messages[0].payload, "Hello world!");
+    //initiate queues
+    TAILQ_INIT(&process_queue_head);
+    TAILQ_INIT(&send_queue_head);
 
+    //create threads
+    pthread_create(&receiver_thread, NULL, receiver, NULL);
+    pthread_create(&packet_handler_thread, NULL, packet_handler, NULL);
+    pthread_create(&sender_thread, NULL, sender, NULL);
     terminal();
 
-    pthread_create(&receiver_thread, NULL, receiver, NULL);
+    pthread_cancel(receiver_thread);
+    pthread_cancel(packet_handler_thread);
+    pthread_cancel(sender_thread);
+
     pthread_join(receiver_thread, NULL);
-    printf("Receiver returned\n");
+    pthread_join(packet_handler_thread, NULL);
+    pthread_join(sender_thread, NULL);
 
     int true_v = 1;
     setsockopt(socket_descriptor,SOL_SOCKET,SO_REUSEADDR,&true_v,sizeof(int));
