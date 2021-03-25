@@ -36,15 +36,16 @@ void terminal_neighbors() {
 void terminal_send() {
     erase();
     printf("Whom to send to:\n\n");
-    for (int i=1; i<total_router_c+1; ++i)
-        printf("%d: (ip-port - %s:%hu) (cost - unknown)\n", i, external_router_ip[i], external_router_port[i]);
-    printf("\n$ ");
+    for (int i=1; i<total_router_c+1; ++i) {
+        if (distance_vector[i]!=-1) printf("%d: (ip-port - %s:%hu) (cost - %d)\n", i, external_router_ip[i], external_router_port[i], distance_vector[i]);
+    }
+    printf("\n0: go back\n\n$ ");
 
     int choice;
     scanf("%d", &choice);
     flush();
 
-    if (choice<=0 || choice>total_router_c)
+    if (choice<=0 || choice>total_router_c || distance_vector[choice]==-1)
         return;
 
     printf("\nMessage: ");
@@ -74,7 +75,7 @@ void terminal_received() {
     erase();
     pthread_mutex_lock(&received_messages_mutex);
     while (received_messages_c--) {
-        printf("%s:%hu sent: %s\n", external_router_ip[received_messages[received_messages_c].source_router_id], external_router_port[received_messages[received_messages_c].source_router_id], received_messages[received_messages_c].payload);
+        printf("%d (%s:%hu) sent: %s\n", received_messages[received_messages_c].source_router_id, external_router_ip[received_messages[received_messages_c].source_router_id], external_router_port[received_messages[received_messages_c].source_router_id], received_messages[received_messages_c].payload);
     }
     received_messages_c = 0;
     pthread_mutex_unlock(&received_messages_mutex);

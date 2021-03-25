@@ -9,10 +9,12 @@ void parse_link() {
         if (router_id==router1) {
             neighbors[(neighbors_c++)] = router2;
             link_cost[router2] = cost;
+            distance_vector[router2] = cost; //TODO: Delete when receiving dynamically
         }
         if (router_id==router2) {
             neighbors[(neighbors_c++)]=router1;
             link_cost[router1] = cost;
+            distance_vector[router1] = cost; //TODO: Delete when receiving dynamically
         }
     }
 
@@ -31,9 +33,11 @@ void parse_router() {
             router_port = port;
             memcpy(router_ip,ip,sizeof(ip));
         }
-        external_router_port[id] = port;
-        memcpy(external_router_ip[id],ip,sizeof(ip));
-        if (id-total_router_c>0) total_router_c=id;
+        if (distance_vector[id]!=-1) {
+            external_router_port[id] = port;
+            memcpy(external_router_ip[id],ip,sizeof(ip));
+            if (id-total_router_c>0) total_router_c=id;
+        }
     }
 
     fclose(fp);

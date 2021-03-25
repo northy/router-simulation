@@ -25,6 +25,8 @@ char external_router_ip[MAX_NEIGHBORS][16];
 int neighbors_c=0, neighbors[MAX_NEIGHBORS];
 int link_cost[MAX_NEIGHBORS];
 
+int distance_vector[MAX_NEIGHBORS];
+
 int socket_descriptor;
 
 r_message received_messages[QUEUE_MAX];
@@ -46,6 +48,10 @@ int main(int argc, char *argv[]) {
     router_id = atoi(argv[1]);
 
     setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
+
+    memset(distance_vector,-1,sizeof(distance_vector));
+
+    distance_vector[router_id] = 0;
 
     parse_link();
     parse_router();
