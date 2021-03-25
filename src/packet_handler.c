@@ -48,7 +48,10 @@ void* packet_handler(void* args) {
                 pthread_mutex_lock(&received_messages_mutex);
                 memcpy(&received_messages[received_messages_c++], &m->item, sizeof(r_message));
                 pthread_mutex_unlock(&received_messages_mutex);
-                if (terminal_free) terminal_headers();
+                if (pthread_mutex_trylock(&terminal_mutex)==0) {
+                    terminal_headers();
+                    pthread_mutex_unlock(&terminal_mutex);
+                }
                 free(m);
             }
             else { //data to forward

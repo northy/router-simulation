@@ -1,6 +1,6 @@
 #include <terminal.h>
 
-char terminal_free = 0;
+pthread_mutex_t terminal_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void erase() {
     fprintf(stdout, "\033[2J\033[0;0f");
@@ -86,9 +86,9 @@ void terminal() {
     bool running = true;
     while (running) {
         terminal_headers();
-        terminal_free = 1;
+        pthread_mutex_unlock(&terminal_mutex);
         char input = get_char();
-        terminal_free = 0;
+        pthread_mutex_lock(&terminal_mutex);
         switch (input) {
             case '1' :
                 terminal_neighbors();
