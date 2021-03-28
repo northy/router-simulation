@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+//listens to incoming messages
 void* receiver(void* args) {
     r_message buf;
     struct sockaddr_in si_other;

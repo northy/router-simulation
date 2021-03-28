@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+//initialization of variables
 pthread_t receiver_thread, packet_handler_thread, sender_thread;
 
 int router_id;
@@ -40,7 +41,7 @@ struct _message_queue_h process_queue_head, send_queue_head;
 sem_t packet_handler_sem, sender_sem;
 
 int main(int argc, char *argv[]) {
-    if (argc<2) {
+    if (argc<2) { //it is necessary to run the Router with an id
         fprintf(stderr, "Please use \"./Router <id>\"\n");
         exit(1);
     }

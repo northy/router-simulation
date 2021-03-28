@@ -2,6 +2,7 @@
 
 pthread_mutex_t terminal_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+//helpers
 void erase() {
     fprintf(stdout, "\033[2J\033[0;0f");
 }
@@ -25,6 +26,7 @@ void terminal_headers() {
     printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages (%d)\n\n0 - exit\n\n$ ", router_id, received_messages_c);
 }
 
+//shows all the neighbors and the status and cost of each one
 void terminal_neighbors() {
     erase();
     for (int i=0; i<neighbors_c; ++i)
@@ -33,6 +35,7 @@ void terminal_neighbors() {
     get_char();
 }
 
+//shows menu to select an option and send the message
 void terminal_send() {
     erase();
     printf("Whom to send to:\n\n");
@@ -41,6 +44,7 @@ void terminal_send() {
     }
     printf("\n0: go back\n\n$ ");
 
+    //choose the address to send the message 
     int choice;
     scanf("%d", &choice);
     flush();
@@ -71,6 +75,7 @@ void terminal_send() {
     get_char();
 }
 
+//shows how messages that have been received
 void terminal_received() {
     erase();
     pthread_mutex_lock(&received_messages_mutex);
@@ -83,6 +88,7 @@ void terminal_received() {
     get_char();
 }
 
+//menu shown in the terminal
 void terminal() {
     bool running = true;
     while (running) {
