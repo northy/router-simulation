@@ -2,6 +2,7 @@
     <img width="400" height="200" src="https://www.google.com.br/url?sa=i&url=https%3A%2F%2Flogo.com%2F&psig=AOvVaw0QnWXG39r3_9-Gr1DOqoOv&ust=1616509723778000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCOjt6JCOxO8CFQAAAAAdAAAAABAD" title="Project Logo"><br />
     <img src="https://img.shields.io/maintenance/yes/2021?style=for-the-badge" title="Project status">
     <img src="https://img.shields.io/badge/platform-linux-lightgray?style=for-the-badge" title="Platform">
+    <img src="https://img.shields.io/github/workflow/status/northy/router-simulation/compile?style=for-the-badge" title="Build status">
 </p>
 
 # Router Simulation
