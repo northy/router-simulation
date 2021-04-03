@@ -19,6 +19,6 @@ jobs:
         cmake-version: '3.x'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Use CMake
-      run: cmake
+      run: cmake .
     - name: Use Make
       run: make
