@@ -32,6 +32,17 @@ To execute the project, you will initially need to install the following depende
 
 After the installation of the premises, it is necessary to obtain a copy of the project, to do this, clone the project or `fork` it through the button located in the upper right corner and then clone it on your machine.
 
+### 3. Project structure
+
+The project is structured as follows:
+
+| Folder   | Content               |
+|----------|-----------------------|
+| app/     | Executable files      |
+| include/ | Header files          |
+| inputs/  | Example input files   |
+| src/     | Source routines files |
+
 ## Instructions
 
 To clone and compile the repository you need to:
@@ -44,7 +55,7 @@ cd router-simulation && mkdir build && cd build && cmake ..
 make -j
 ```
 
-### Ninja
+#### Ninja
 
 ```sh
 git clone https://github.com/northy/router-simulation.git
@@ -52,9 +63,44 @@ cd router-simulation && mkdir build && cd build && cmake .. -G "Ninja"
 ninja
 ```
 
-#### Running the project
+### Running the project
 
 Finally, after following the previous steps, to run the project, in the build folder, execute the following command:
+
 ```
 ./Router <id>
 ```
+
+In the execution folder, there must also contain two configuration files:
+
+#### router.config
+
+In this file, we configure the routers. Each line contains the following:
+
+```
+id port ip
+```
+
+where:
+
+| Input | Description                  | Restriction                     |
+|-------|------------------------------|---------------------------------|
+| id    | Router's id                  | id>=1                           |
+| port  | UDP socket port to be opened | default port restrictions apply |
+| ip    | IPv4 address of the router   | default IPv$ restrictions apply |
+
+#### link.config
+
+In this file, we configure the network bidirectional links. Each line contains the following:
+
+```
+id1 id2 cost
+```
+
+where:
+
+| Input | Description                 | Restriction          |
+|-------|-----------------------------|----------------------|
+| id1   | Link's first node           | id1>=1               |
+| id2   | Link's second node          | id2>=1, id2!=id1 |
+| cost  | Network cost from id1<->id2 | cost>=0              |
