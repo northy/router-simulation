@@ -1,0 +1,27 @@
+name: Compile the project
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v1.8
+      with:
+        cmake-version: '3.x'
+        github-api-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Go to the right folder
+      run: |
+        mkdir build -p
+        cd build
+    - name: Use CMake
+      run: cmake ..
+    - name: Use Make
+      run: make
