@@ -5,6 +5,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,11 +18,7 @@ jobs:
       with:
         cmake-version: '3.x'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Go to the right folder
-      run: |
-        mkdir build -p
-        cd build
     - name: Use CMake
-      run: cmake ..
+      run: cmake
     - name: Use Make
       run: make
