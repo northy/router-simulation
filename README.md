@@ -87,7 +87,7 @@ where:
 |-------|------------------------------|---------------------------------|
 | id    | Router's id                  | id>=1                           |
 | port  | UDP socket port to be opened | default port restrictions apply |
-| ip    | IPv4 address of the router   | default IPv$ restrictions apply |
+| ip    | IPv4 address of the router   | default IPv4 restrictions apply |
 
 #### link.config
 
