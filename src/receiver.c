@@ -11,11 +11,13 @@ void* receiver(void* args) {
     for (;;) {
         memset(&buf, 0, sizeof(buf));
 
+        //receive UDP packet
         if ((recv_len = recvfrom(socket_descriptor, &buf, sizeof(buf), 0, (struct sockaddr *) &si_other, &slen)) == -1) {
             perror("Receiving socket");
             exit(1);
         }
 
+        //add item to packet_handler's queue
         message_queue* m = malloc(sizeof(message_queue));
         memcpy(&m->item, &buf, sizeof(r_message));
 

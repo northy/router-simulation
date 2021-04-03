@@ -21,6 +21,7 @@ char get_char() {
     return ch;
 }
 
+//print out the menu
 void terminal_headers() {
     erase();
     printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages (%d)\n\n0 - exit\n\n$ ", router_id, received_messages_c);
@@ -49,6 +50,7 @@ void terminal_send() {
     scanf("%d", &choice);
     flush();
 
+    //invalid option
     if (choice<=0 || choice>total_router_c || distance_vector[choice]==-1)
         return;
 
@@ -60,9 +62,11 @@ void terminal_send() {
     m.source_router_id = router_id;
     fgets(m.payload, BUF_LEN, stdin);
 
+    //clear trailing EOL
     if ((strlen(m.payload) > 0) && (m.payload[strlen (m.payload) - 1] == '\n'))
         m.payload[strlen (m.payload) - 1] = '\0';
 
+    //add item to packet_handler's queue
     message_queue* mq = malloc(sizeof(message_queue));
     memcpy(&mq->item, &m, sizeof(r_message));
 
@@ -75,7 +79,7 @@ void terminal_send() {
     get_char();
 }
 
-//shows how messages that have been received
+//shows messages that have been received
 void terminal_received() {
     erase();
     pthread_mutex_lock(&received_messages_mutex);
@@ -88,7 +92,7 @@ void terminal_received() {
     get_char();
 }
 
-//menu shown in the terminal
+//CLI
 void terminal() {
     bool running = true;
     while (running) {

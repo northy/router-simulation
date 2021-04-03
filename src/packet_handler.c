@@ -26,14 +26,16 @@ void* packet_handler(void* args) {
         while ((r = sem_timedwait(&packet_handler_sem, &ts)) == -1 && errno == EINTR)
             continue; /* Restart if interrupted by handler */
         
-        /* Check what happened, if there's an error */
-        /* if (r == -1) {
-            if (errno == ETIMEDOUT)
-                printf("sem_timedwait() timed out\n");
-            else
-                perror("sem_timedwait");
-        }
-        else printf("sem_timedwait() succeeded\n"); */
+        // Check what happened, if there's an error
+        #if DEBUG
+            if (r == -1) {
+                if (errno == ETIMEDOUT)
+                    printf("sem_timedwait() timed out\n");
+                else
+                    perror("sem_timedwait");
+            }
+            else printf("sem_timedwait() succeeded\n");
+        #endif
 
         pthread_mutex_lock(&process_queue_mutex);
         m = TAILQ_FIRST(&process_queue_head);
@@ -44,6 +46,7 @@ void* packet_handler(void* args) {
             TAILQ_REMOVE(&process_queue_head, m, entries);
             pthread_mutex_unlock(&process_queue_mutex);
             if (m->item.type) { //control
+                //TODO: process
                 free(m);
             }
             else if (m->item.destination_router_id==router_id) { //data for this router
@@ -57,6 +60,7 @@ void* packet_handler(void* args) {
                 free(m);
             }
             else { //data to forward
+                //add item to sender's queue
                 pthread_mutex_lock(&send_queue_mutex);
                 TAILQ_INSERT_TAIL(&send_queue_head, m, entries);
                 pthread_mutex_unlock(&send_queue_mutex);

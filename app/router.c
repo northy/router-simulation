@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 
 //initialization of variables
+//referenced globally in include/global.h
 pthread_t receiver_thread, packet_handler_thread, sender_thread;
 
 int router_id;
@@ -54,15 +55,17 @@ int main(int argc, char *argv[]) {
 
     distance_vector[router_id] = 0;
 
-    parse_link();
-    parse_router();
+    //parse the config files
+    parse_link(); //link.config
+    parse_router(); //router.config
 
-    //create socket
+    //create the UDP socket
     if ((socket_descriptor=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
         perror("Socket creation error");
         exit(1);
     }
 
+    //bind the socket
     struct sockaddr_in si_me;
     memset((char *) &si_me, 0, sizeof(si_me));
     si_me.sin_family = AF_INET;
@@ -88,6 +91,7 @@ int main(int argc, char *argv[]) {
     pthread_create(&sender_thread, NULL, sender, NULL);
     terminal();
 
+    //terminate threads
     pthread_cancel(receiver_thread);
     pthread_cancel(packet_handler_thread);
     pthread_cancel(sender_thread);
@@ -96,6 +100,7 @@ int main(int argc, char *argv[]) {
     pthread_join(packet_handler_thread, NULL);
     pthread_join(sender_thread, NULL);
 
+    //close the socket
     int true_v = 1;
     setsockopt(socket_descriptor,SOL_SOCKET,SO_REUSEADDR,&true_v,sizeof(int));
     close(socket_descriptor);

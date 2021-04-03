@@ -12,6 +12,7 @@ typedef struct _r_message {
 
 } r_message;
 
+//message queue inner structure (refer to sys/queue's tail queue)
 typedef struct _message_queue {
     r_message item;
     TAILQ_ENTRY(_message_queue) entries;

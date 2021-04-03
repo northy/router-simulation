@@ -28,6 +28,7 @@ void* sender(void* args) {
                 printf("Sender got %s\n",m->item.payload);
             #endif
 
+            //prepare socket address to send message
             memset((char *) &si_other, 0, sizeof(si_other));
             si_other.sin_family = AF_INET;
             si_other.sin_port = htons(external_router_port[m->item.destination_router_id]);
@@ -36,6 +37,7 @@ void* sender(void* args) {
                 exit(1);
             }
 
+            //send the UDP packet
             if (sendto(socket_descriptor, &m->item, sizeof(m->item), 0, (struct sockaddr *) &si_other, slen)==-1) {
                 perror("Sending socket");
                 exit(1);
