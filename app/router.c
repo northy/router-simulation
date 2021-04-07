@@ -20,14 +20,14 @@ int router_id;
 unsigned short router_port;
 char router_ip[16];
 
+char link_cost[MAX_NEIGHBORS];
+int neighbors_c=0, neighbors[MAX_NEIGHBORS];
+
 int total_router_c=0;
 unsigned short external_router_port[MAX_NEIGHBORS];
 char external_router_ip[MAX_NEIGHBORS][16];
 
-int neighbors_c=0, neighbors[MAX_NEIGHBORS];
-int link_cost[MAX_NEIGHBORS];
-
-int distance_vector[MAX_NEIGHBORS];
+char distance_vector[MAX_NEIGHBORS];
 
 int socket_descriptor;
 
