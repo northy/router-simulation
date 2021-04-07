@@ -26,6 +26,7 @@ extern pthread_mutex_t received_messages_mutex;
 extern message_queue *process_queue, *send_queue;
 extern pthread_mutex_t process_queue_mutex, send_queue_mutex;
 extern TAILQ_HEAD(_message_queue_h, _message_queue) process_queue_head, send_queue_head;
+extern int process_queue_c, send_queue_c;
 
 extern sem_t packet_handler_sem, sender_sem;
 

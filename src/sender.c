@@ -19,8 +19,8 @@ void* sender(void* args) {
         #endif
 
         pthread_mutex_lock(&send_queue_mutex);
-        m = TAILQ_FIRST(&send_queue_head);
-        if (m!=NULL) {
+        if (send_queue_c>0 && (m = TAILQ_FIRST(&send_queue_head))!=NULL) {
+            send_queue_c--;
             TAILQ_REMOVE(&send_queue_head, m, entries);
             pthread_mutex_unlock(&send_queue_mutex);
 

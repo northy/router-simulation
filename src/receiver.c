@@ -22,9 +22,16 @@ void* receiver(void* args) {
         memcpy(&m->item, &buf, sizeof(r_message));
 
         pthread_mutex_lock(&process_queue_mutex);
-        TAILQ_INSERT_TAIL(&process_queue_head, m, entries);
-        pthread_mutex_unlock(&process_queue_mutex);
-        sem_post(&packet_handler_sem);
+        if (process_queue_c<QUEUE_MAX) {
+            process_queue_c++;
+            TAILQ_INSERT_TAIL(&process_queue_head, m, entries);
+            pthread_mutex_unlock(&process_queue_mutex);
+            sem_post(&packet_handler_sem);
+        }
+        else { //no space, discard message
+            free(m);
+            pthread_mutex_unlock(&process_queue_mutex);
+        }
     }
     
     pthread_exit(NULL);

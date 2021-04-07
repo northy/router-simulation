@@ -71,9 +71,16 @@ void terminal_send() {
     memcpy(&mq->item, &m, sizeof(r_message));
 
     pthread_mutex_lock(&process_queue_mutex);
-    TAILQ_INSERT_TAIL(&process_queue_head, mq, entries);
-    pthread_mutex_unlock(&process_queue_mutex);
-    sem_post(&packet_handler_sem);
+    if (process_queue_c<QUEUE_MAX) {
+        process_queue_c++;
+        TAILQ_INSERT_TAIL(&process_queue_head, mq, entries);
+        pthread_mutex_unlock(&process_queue_mutex);
+        sem_post(&packet_handler_sem);
+    }
+    else { //no space, discard message
+        free(mq);
+        pthread_mutex_unlock(&process_queue_mutex);
+    }
 
     printf("\nSent! Press enter...\n");
     get_char();
