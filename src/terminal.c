@@ -31,7 +31,7 @@ void terminal_headers() {
 void terminal_neighbors() {
     erase();
     for (int i=0; i<neighbors_c; ++i)
-        printf("Neighbor %d: (id - %d) (cost - %d) (ip-port - %s:%hu) (status - unknown)\n", i+1, neighbors[i], link_cost[neighbors[i]], external_router_ip[neighbors[i]], external_router_port[neighbors[i]]);
+        printf("Neighbor %d: (id - %d) (link cost - %d) (ip-port - %s:%hu) (status - link %s)\n", i+1, neighbors[i], link_cost[neighbors[i]], external_router_ip[neighbors[i]], external_router_port[neighbors[i]], dv_valid[neighbors[i]] ? "up" : "down");
     printf("\nPress enter...\n");
     get_char();
 }
@@ -40,10 +40,15 @@ void terminal_neighbors() {
 void terminal_send() {
     erase();
     printf("Whom to send to:\n\n");
+
+    pthread_mutex_lock(&dv_mutex);
     for (int i=1; i<total_router_c+1; ++i) {
-        if (distance_vector[i]!=-1) printf("%d: (ip-port - %s:%hu) (cost - %d)\n", i, external_router_ip[i], external_router_port[i], distance_vector[i]);
+        if (distance_vector[router_id][i]!=-1) printf("%d: (ip-port - %s:%hu) (cost - %d)\n", i, external_router_ip[i], external_router_port[i], distance_vector[router_id][i]);
     }
+    pthread_mutex_unlock(&dv_mutex);
+
     printf("\n0: go back\n\n$ ");
+
 
     //choose the address to send the message 
     int choice;
@@ -51,9 +56,12 @@ void terminal_send() {
     flush();
 
     //invalid option
-    if (choice<=0 || choice>total_router_c || distance_vector[choice]==-1)
+    pthread_mutex_lock(&dv_mutex);
+    if (choice<=0 || choice>total_router_c || distance_vector[router_id][choice]==-1) {
+        pthread_mutex_unlock(&dv_mutex);
         return;
-
+    }
+    pthread_mutex_unlock(&dv_mutex);
     printf("\nMessage: ");
     
     r_message m;

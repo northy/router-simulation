@@ -15,7 +15,10 @@ extern int total_router_c;
 extern unsigned short external_router_port[MAX_NEIGHBORS];
 extern char external_router_ip[MAX_NEIGHBORS][16];
 
-extern char distance_vector[MAX_NEIGHBORS];
+extern pthread_mutex_t dv_mutex;
+extern int dv_source[MAX_NEIGHBORS];
+extern char dv_valid[MAX_NEIGHBORS];
+extern char distance_vector[MAX_NEIGHBORS][MAX_NEIGHBORS];
 
 extern int socket_descriptor;
 

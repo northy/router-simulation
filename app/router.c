@@ -27,7 +27,10 @@ int total_router_c=0;
 unsigned short external_router_port[MAX_NEIGHBORS];
 char external_router_ip[MAX_NEIGHBORS][16];
 
-char distance_vector[MAX_NEIGHBORS];
+pthread_mutex_t dv_mutex = PTHREAD_MUTEX_INITIALIZER;
+int dv_source[MAX_NEIGHBORS];
+char dv_valid[MAX_NEIGHBORS];
+char distance_vector[MAX_NEIGHBORS][MAX_NEIGHBORS];
 
 int socket_descriptor;
 
@@ -52,9 +55,13 @@ int main(int argc, char *argv[]) {
 
     setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
 
+    memset(dv_source,-1,sizeof(dv_source));
+    memset(dv_valid,0,sizeof(dv_valid));
     memset(distance_vector,-1,sizeof(distance_vector));
-
-    distance_vector[router_id] = 0;
+    
+    dv_source[router_id] = router_id;
+    dv_valid[router_id] = 1;
+    distance_vector[router_id][router_id] = 0;
 
     //parse the config files
     parse_link(); //link.config

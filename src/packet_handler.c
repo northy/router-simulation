@@ -40,7 +40,7 @@ void* packet_handler(void* args) {
         pthread_mutex_lock(&process_queue_mutex);
         if (process_queue_c>0 && (m = TAILQ_FIRST(&process_queue_head))!=NULL) {
             #if DEBUG
-                printf("Handler got %s\n",m->item.payload);
+                printf("Handler got %s for %d\n", m->item.payload, m->item.destination_router_id);
             #endif
             process_queue_c--;
             TAILQ_REMOVE(&process_queue_head, m, entries);
