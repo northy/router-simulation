@@ -8,6 +8,7 @@ typedef struct _r_message {
     char type; //0 = data; 1 = control
     int source_router_id;
     int destination_router_id;
+    int offset;
     char payload[BUF_LEN];
 
 } r_message;
