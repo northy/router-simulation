@@ -7,40 +7,58 @@ void send_dv() {
     m.type = 1;
     m.source_router_id = router_id;
 
-    //MAX_NEIGHBORS/BUF_LEN must be exact
-    for (int i=0; i<MAX_NEIGHBORS/BUF_LEN; ++i) {
-        m.offset = BUF_LEN*i;
-        #if DEBUG
-            printf("Preparing DV from %d to %d\n", m.offset, m.offset+BUF_LEN-1);
-        #endif
-        memcpy(m.payload, &distance_vector[router_id][m.offset], BUF_LEN);
+    for (int i=1; i<MAX_NEIGHBORS; ++i) {
+        if (distance_vector[router_id][i]!=-1) {
+            uint32_t nl = htonl(i); //convert and store destination as BIG ENDIAN
+            m.payload[m.offset*5+0] = (nl>>0)&0xFF;
+            m.payload[m.offset*5+1] = (nl>>8)&0xFF;
+            m.payload[m.offset*5+2] = (nl>>16)&0xFF;
+            m.payload[m.offset*5+3] = (nl>>24)&0xFF;
+            m.payload[m.offset*5+4] = distance_vector[router_id][i]; //store cost
+            //printf("%d %d %d %d\n", m.payload[m.offset*5+0], m.payload[m.offset*5+1], m.payload[m.offset*5+2], m.payload[m.offset*5+3]);
+            m.offset++;
+        }
 
-        for (int n=0; n<neighbors_c; ++n) {
-            #if DEBUG
-                printf("Sending to neighbor %d\n", neighbors[n]);
-            #endif
-            m.destination_router_id = neighbors[n];
-            message_queue* mq = malloc(sizeof(message_queue));
-            memcpy(&mq->item, &m, sizeof(r_message));
+        if ((m.offset+1)*5>=BUF_LEN || i==MAX_NEIGHBORS-1) {
+            for (int n=0; n<neighbors_c; ++n) {
+                #if DEBUG
+                    printf("Sending DV to neighbor %d\n", neighbors[n]);
+                #endif
+                m.destination_router_id = neighbors[n];
+                message_queue* mq = malloc(sizeof(message_queue));
+                memcpy(&mq->item, &m, sizeof(r_message));
 
-            pthread_mutex_lock(&send_queue_mutex);
-            if (send_queue_c<QUEUE_MAX) {
-                send_queue_c++;
-                TAILQ_INSERT_TAIL(&send_queue_head, mq, entries);
+                pthread_mutex_lock(&send_queue_mutex);
+                if (send_queue_c<QUEUE_MAX) {
+                    send_queue_c++;
+                    TAILQ_INSERT_TAIL(&send_queue_head, mq, entries);
+                    pthread_mutex_unlock(&send_queue_mutex);
+                    sem_post(&sender_sem);
+                }
                 pthread_mutex_unlock(&send_queue_mutex);
-                sem_post(&sender_sem);
             }
-            pthread_mutex_unlock(&send_queue_mutex);
+            m.offset = 0;
         }
     }
 }
 
 void receive_dv(r_message *m) {
-    memcpy(&distance_vector[m->source_router_id][m->offset], m->payload, BUF_LEN);
-    dv_valid[m->source_router_id] = 1;
     #if DEBUG
-        printf("Received DV [%d-%d] from %d\n", m->offset, m->offset+BUF_LEN-1, m->source_router_id);
+        printf("Received DV from %d\n", m->source_router_id);
     #endif
+
+    for (int i=0; i<m->offset; ++i) {
+        uint32_t nl=0;
+        nl|=(m->payload[i*5+0]<<0);
+        nl|=(m->payload[i*5+1]<<8);
+        nl|=(m->payload[i*5+2]<<16);
+        nl|=(m->payload[i*5+3]<<24);
+        int dest = ntohl(nl);
+        printf("%d %d\n", dest, m->payload[i*5+4]);
+        distance_vector[m->source_router_id][dest] = m->payload[i*5+4];
+    }
+    dv_valid[m->source_router_id] = 1;
+    
     //TODO: process
 }
 
