@@ -54,7 +54,9 @@ void receive_dv(r_message *m) {
         nl|=(m->payload[i*5+2]<<16);
         nl|=(m->payload[i*5+3]<<24);
         int dest = ntohl(nl);
-        printf("%d %d\n", dest, m->payload[i*5+4]);
+	#if DEBUG
+		printf("Distancd from %d: %d\n", dest, m->payload[i*5+4]);
+	#endif
         distance_vector[m->source_router_id][dest] = m->payload[i*5+4];
     }
     dv_valid[m->source_router_id] = 1;
