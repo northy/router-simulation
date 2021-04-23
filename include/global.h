@@ -9,6 +9,7 @@ extern unsigned short router_port;
 extern char router_ip[16];
 
 extern char link_cost[MAX_NEIGHBORS];
+extern char link_enabled[MAX_NEIGHBORS];
 extern int neighbors_c, neighbors[MAX_NEIGHBORS];
 
 extern int total_router_c;

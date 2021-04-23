@@ -21,6 +21,7 @@ unsigned short router_port;
 char router_ip[16];
 
 char link_cost[MAX_NEIGHBORS];
+char link_enabled[MAX_NEIGHBORS];
 int neighbors_c=0, neighbors[MAX_NEIGHBORS];
 
 int total_router_c=0;
@@ -54,6 +55,8 @@ int main(int argc, char *argv[]) {
     router_id = atoi(argv[1]);
 
     setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
+
+    memset(link_enabled,1,sizeof(link_enabled));
 
     memset(dv_source,-1,sizeof(dv_source));
     memset(dv_valid,0,sizeof(dv_valid));

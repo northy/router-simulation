@@ -25,7 +25,7 @@ void* sender(void* args) {
             pthread_mutex_unlock(&send_queue_mutex);
 
             #if DEBUG
-                printf("Sender got %s\n",m->item.payload);
+                if (!m->item.type) printf("Sender got %s\n",m->item.payload);
             #endif
 
             //prepare socket address to send message

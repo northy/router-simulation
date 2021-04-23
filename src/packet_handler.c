@@ -7,6 +7,7 @@ void send_dv() {
     m.type = 1;
     m.source_router_id = router_id;
 
+    pthread_mutex_lock(&dv_mutex);
     for (int i=1; i<MAX_NEIGHBORS; ++i) {
         if (distance_vector[router_id][i]!=-1) {
             uint32_t nl = htonl(i); //convert and store destination as BIG ENDIAN
@@ -21,6 +22,7 @@ void send_dv() {
 
         if ((m.offset+1)*5>=BUF_LEN || i==MAX_NEIGHBORS-1) {
             for (int n=0; n<neighbors_c; ++n) {
+                if (!link_enabled[neighbors[n]]) continue; //ignore disabled links' neighbors
                 #if DEBUG
                     printf("Sending DV to neighbor %d\n", neighbors[n]);
                 #endif
@@ -40,13 +42,17 @@ void send_dv() {
             m.offset = 0;
         }
     }
+    pthread_mutex_unlock(&dv_mutex);
 }
 
 void receive_dv(r_message *m) {
+    if (!link_enabled[m->source_router_id])
+        return; //ignore disabled link's messages
     #if DEBUG
         printf("Received DV from %d\n", m->source_router_id);
     #endif
 
+    pthread_mutex_lock(&dv_mutex);
     for (int i=0; i<m->offset; ++i) {
         uint32_t nl=0;
         nl|=(m->payload[i*5+0]<<0);
@@ -55,13 +61,14 @@ void receive_dv(r_message *m) {
         nl|=(m->payload[i*5+3]<<24);
         int dest = ntohl(nl);
 	#if DEBUG
-		printf("Distancd from %d: %d\n", dest, m->payload[i*5+4]);
+		printf("Distance from %d: %d\n", dest, m->payload[i*5+4]);
 	#endif
         distance_vector[m->source_router_id][dest] = m->payload[i*5+4];
     }
-    dv_valid[m->source_router_id] = 1;
     
     //TODO: process
+    
+    pthread_mutex_unlock(&dv_mutex);
 }
 
 void* packet_handler(void* args) {
@@ -106,7 +113,7 @@ void* packet_handler(void* args) {
         pthread_mutex_lock(&process_queue_mutex);
         if (process_queue_c>0 && (m = TAILQ_FIRST(&process_queue_head))!=NULL) {
             #if DEBUG
-                printf("Handler got %s for %d\n", m->item.payload, m->item.destination_router_id);
+                if (!m->item.type) printf("Handler got %s for %d\n", m->item.payload, m->item.destination_router_id);
             #endif
             process_queue_c--;
             TAILQ_REMOVE(&process_queue_head, m, entries);
