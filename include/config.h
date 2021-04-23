@@ -1,3 +1,5 @@
+#pragma once
+
 #define BUF_LEN 512 //received messages buffer
 #define MAX_NEIGHBORS 512 //maximum number of routers in the network graph
 #define QUEUE_MAX 1024 //maximum size of the internal queues
