@@ -31,6 +31,7 @@ char external_router_ip[MAX_NEIGHBORS][16];
 pthread_mutex_t dv_mutex = PTHREAD_MUTEX_INITIALIZER;
 int dv_source[MAX_NEIGHBORS];
 char dv_valid[MAX_NEIGHBORS];
+time_t dv_recv_time[MAX_NEIGHBORS];
 char distance_vector[MAX_NEIGHBORS][MAX_NEIGHBORS];
 
 int socket_descriptor;

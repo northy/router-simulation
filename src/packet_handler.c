@@ -42,12 +42,46 @@ void send_dv() {
             m.offset = 0;
         }
     }
+
+    //send an extra blank control message, to signal that it's over
+    m.offset = 0;
+    for (int n=0; n<neighbors_c; ++n) {
+        if (!link_enabled[neighbors[n]]) continue; //ignore disabled links' neighbors
+        #if DEBUG
+            printf("Sending DV-end to neighbor %d\n", neighbors[n]);
+        #endif
+        m.destination_router_id = neighbors[n];
+        message_queue* mq = malloc(sizeof(message_queue));
+        memcpy(&mq->item, &m, sizeof(r_message));
+
+        pthread_mutex_lock(&send_queue_mutex);
+        if (send_queue_c<QUEUE_MAX) {
+            send_queue_c++;
+            TAILQ_INSERT_TAIL(&send_queue_head, mq, entries);
+            pthread_mutex_unlock(&send_queue_mutex);
+            sem_post(&sender_sem);
+        }
+        pthread_mutex_unlock(&send_queue_mutex);
+    }
+
     pthread_mutex_unlock(&dv_mutex);
 }
 
 void receive_dv(r_message *m) {
     if (!link_enabled[m->source_router_id])
         return; //ignore disabled link's messages
+    
+    if (!m->offset) {
+        #if DEBUG
+            printf("Received DV-end from %d\n", m->source_router_id);
+        #endif
+        pthread_mutex_lock(&dv_mutex);
+        dv_valid[m->source_router_id] = 1;
+        time(&dv_recv_time[m->source_router_id]);
+        pthread_mutex_unlock(&dv_mutex);
+        return;
+    }
+
     #if DEBUG
         printf("Received DV from %d\n", m->source_router_id);
     #endif
@@ -71,6 +105,21 @@ void receive_dv(r_message *m) {
     pthread_mutex_unlock(&dv_mutex);
 }
 
+void check_disabled() {
+    time_t now;
+    time(&now);
+
+    pthread_mutex_lock(&dv_mutex);
+
+    for (int n=0; n<neighbors_c; ++n) {
+        if (dv_valid[neighbors[n]] && (int)difftime(now,dv_recv_time[neighbors[n]])>WAIT_DELAY*DV_SEND_ROUNDS_TOLERANCE) {
+            dv_valid[neighbors[n]] = 0;
+        }
+    }
+
+    pthread_mutex_unlock(&dv_mutex);
+}
+
 void* packet_handler(void* args) {
     struct timespec ts;
     time_t now, then;
@@ -86,6 +135,7 @@ void* packet_handler(void* args) {
         time(&now);
         if ((int)difftime(now,then)>WAIT_DELAY-1) {
             send_dv();
+            check_disabled();
             clock_gettime(CLOCK_REALTIME, &ts);
             time(&then);
             ts.tv_sec += WAIT_DELAY;

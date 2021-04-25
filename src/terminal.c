@@ -31,7 +31,7 @@ void terminal_headers() {
 void terminal_neighbors() {
     erase();
     for (int i=0; i<neighbors_c; ++i)
-        printf("Neighbor %d: (id - %d) (link cost - %d) (ip-port - %s:%hu) (status - link %s)\n", i+1, neighbors[i], link_cost[neighbors[i]], external_router_ip[neighbors[i]], external_router_port[neighbors[i]], dv_valid[neighbors[i]] ? "up" : "down");
+        printf("Neighbor %d: (id - %d) (link cost - %d) (ip-port - %s:%hu) (status - link %s)\n", i+1, neighbors[i], link_cost[neighbors[i]], external_router_ip[neighbors[i]], external_router_port[neighbors[i]], dv_valid[neighbors[i]]&&link_enabled[neighbors[i]] ? "up" : "down");
     printf("\nPress enter...\n");
     get_char();
 }

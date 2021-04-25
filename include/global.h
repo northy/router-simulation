@@ -19,6 +19,7 @@ extern char external_router_ip[MAX_NEIGHBORS][16];
 extern pthread_mutex_t dv_mutex;
 extern int dv_source[MAX_NEIGHBORS];
 extern char dv_valid[MAX_NEIGHBORS];
+extern time_t dv_recv_time[MAX_NEIGHBORS];
 extern char distance_vector[MAX_NEIGHBORS][MAX_NEIGHBORS];
 
 extern int socket_descriptor;
