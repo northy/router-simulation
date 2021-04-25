@@ -28,6 +28,10 @@ extern r_message received_messages[QUEUE_MAX];
 extern int received_messages_c;
 extern pthread_mutex_t received_messages_mutex;
 
+extern char received_dvs[QUEUE_MAX];
+extern int received_dvs_c;
+extern pthread_mutex_t received_dvs_mutex;
+
 extern message_queue *process_queue, *send_queue;
 extern pthread_mutex_t process_queue_mutex, send_queue_mutex;
 extern TAILQ_HEAD(_message_queue_h, _message_queue) process_queue_head, send_queue_head;

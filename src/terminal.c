@@ -24,7 +24,7 @@ char get_char() {
 //print out the menu
 void terminal_headers() {
     erase();
-    printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages (%d)\n4 - toggle link\n\n0 - exit\n\n$ ", router_id, received_messages_c);
+    printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages (%d)\n4 - toggle link\n5 - received DVs (%d)\n\n0 - exit\n\n$ ", router_id, received_messages_c, received_dvs_c);
 }
 
 //shows all the neighbors and the status and cost of each one
@@ -127,6 +127,18 @@ void terminal_toggle_link() {
     link_enabled[choice] = !link_enabled[choice];
 }
 
+void terminal_received_dvs() {
+    erase();
+    pthread_mutex_lock(&received_dvs_mutex);
+    while (received_dvs_c--) {
+        printf("%d (%s:%hu) sent a distance vector\n", received_dvs[received_dvs_c], external_router_ip[received_dvs[received_dvs_c]], external_router_port[received_dvs[received_dvs_c]]);
+    }
+    received_dvs_c = 0;
+    pthread_mutex_unlock(&received_dvs_mutex);
+    printf("\nPress enter...\n");
+    get_char();
+}
+
 //CLI
 void terminal() {
     bool running = true;
@@ -147,6 +159,9 @@ void terminal() {
                 break;
             case '4' :
                 terminal_toggle_link();
+                break;
+            case '5' :
+                terminal_received_dvs();
                 break;
             case '0' :
                 running = false;

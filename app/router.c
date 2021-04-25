@@ -40,6 +40,10 @@ r_message received_messages[QUEUE_MAX];
 int received_messages_c = 0;
 pthread_mutex_t received_messages_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+char received_dvs[QUEUE_MAX];
+int received_dvs_c = 0;
+pthread_mutex_t received_dvs_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 message_queue *process_queue, *send_queue;
 pthread_mutex_t process_queue_mutex = PTHREAD_MUTEX_INITIALIZER, send_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 struct _message_queue_h process_queue_head, send_queue_head;

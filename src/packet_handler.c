@@ -79,6 +79,18 @@ void receive_dv(r_message *m) {
         dv_valid[m->source_router_id] = 1;
         time(&dv_recv_time[m->source_router_id]);
         pthread_mutex_unlock(&dv_mutex);
+
+        pthread_mutex_lock(&received_dvs_mutex);
+        if (received_dvs_c<QUEUE_MAX) {
+            received_dvs[received_dvs_c++] = m->source_router_id;
+        }
+        pthread_mutex_unlock(&received_dvs_mutex);
+
+        if (pthread_mutex_trylock(&terminal_mutex)==0) {
+            terminal_headers();
+            pthread_mutex_unlock(&terminal_mutex);
+        }
+        
         return;
     }
 
