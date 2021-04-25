@@ -24,7 +24,7 @@ char get_char() {
 //print out the menu
 void terminal_headers() {
     erase();
-    printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages (%d)\n4 - toggle link\n5 - received DVs (%d)\n\n0 - exit\n\n$ ", router_id, received_messages_c, received_dvs_c);
+    printf("Router simulation - Router %d\n1 - neighbors\n2 - send\n3 - received messages (%d)\n4 - toggle link\n5 - received DVs (%d)\n6 - show all DVs\n\n0 - exit\n\n$ ", router_id, received_messages_c, received_dvs_c);
 }
 
 //shows all the neighbors and the status and cost of each one
@@ -139,6 +139,31 @@ void terminal_received_dvs() {
     get_char();
 }
 
+void terminal_dvs() {
+    erase();
+    pthread_mutex_lock(&dv_mutex);
+    //print router's own dv
+    printf("self:: ");
+    for (int i=0; i<MAX_NEIGHBORS; ++i) {
+        if (distance_vector[router_id][i]!=-1)
+            printf("%d:%d ", i, distance_vector[router_id][i]);
+    }
+    printf("\n");
+
+    for (int n=0; n<neighbors_c; ++n) {
+        if (!dv_valid[neighbors[n]]) continue;
+        printf("%d:: ", neighbors[n]);
+        for (int i=0; i<MAX_NEIGHBORS; ++i) {
+            if (distance_vector[neighbors[n]][i]!=-1)
+                printf("%d:%d ", i, distance_vector[neighbors[n]][i]);
+        }
+        printf("\n");
+    }
+    pthread_mutex_unlock(&dv_mutex);
+    printf("\nPress enter...\n");
+    get_char();
+}
+
 //CLI
 void terminal() {
     bool running = true;
@@ -162,6 +187,9 @@ void terminal() {
                 break;
             case '5' :
                 terminal_received_dvs();
+                break;
+            case '6' :
+                terminal_dvs();
                 break;
             case '0' :
                 running = false;
