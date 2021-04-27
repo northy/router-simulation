@@ -109,6 +109,8 @@ void terminal_received() {
 
 void terminal_toggle_link() {
     erase();
+
+    //show links for toggle
     for (int i=0; i<neighbors_c; ++i)
         printf("%d: (ip-port - %s:%hu) (link - %s)\n", neighbors[i], external_router_ip[neighbors[i]], external_router_port[neighbors[i]], link_enabled[neighbors[i]] ? "up" : "down");
     printf("\n0: go back\n\n$ ");
@@ -130,6 +132,8 @@ void terminal_toggle_link() {
 void terminal_received_dvs() {
     erase();
     pthread_mutex_lock(&received_dvs_mutex);
+
+    //show all messages
     while (received_dvs_c--) {
         printf("%d (%s:%hu) sent a distance vector\n", received_dvs[received_dvs_c], external_router_ip[received_dvs[received_dvs_c]], external_router_port[received_dvs[received_dvs_c]]);
     }
@@ -172,6 +176,8 @@ void terminal() {
         pthread_mutex_unlock(&terminal_mutex);
         char input = get_char();
         pthread_mutex_lock(&terminal_mutex);
+
+        //options menu that appears in the terminal
         switch (input) {
             case '1' :
                 terminal_neighbors();

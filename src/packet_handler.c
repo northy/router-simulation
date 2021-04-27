@@ -75,13 +75,14 @@ void receive_dv(r_message *m) {
         #if DEBUG
             printf("Received DV-end from %d\n", m->source_router_id);
         #endif
+
         pthread_mutex_lock(&dv_mutex);
         dv_valid[m->source_router_id] = 1;
         time(&dv_recv_time[m->source_router_id]);
         pthread_mutex_unlock(&dv_mutex);
 
         pthread_mutex_lock(&received_dvs_mutex);
-        if (received_dvs_c<QUEUE_MAX) {
+        if (received_dvs_c<QUEUE_MAX) { //checks if the limit of dvs in the queue has been reached
             received_dvs[received_dvs_c++] = m->source_router_id;
         }
         pthread_mutex_unlock(&received_dvs_mutex);
@@ -117,6 +118,7 @@ void receive_dv(r_message *m) {
     pthread_mutex_unlock(&dv_mutex);
 }
 
+//check if the dv is disabled
 void check_disabled() {
     time_t now;
     time(&now);
