@@ -32,8 +32,9 @@ void* sender(void* args) {
             pthread_mutex_lock(&dv_mutex);
 
             int dest_id = m->item.destination_router_id;
-            if (dest_id>=MAX_NEIGHBORS || distance_vector[router_id][dest_id]==-1) { //there's no route to follow
+            if (dest_id>=MAX_NEIGHBORS || dest_id<0 || distance_vector[router_id][dest_id]==-1) { //there's no route to follow
                 free(m);
+                pthread_mutex_unlock(&dv_mutex);
                 continue;
             }
             memset((char *) &si_other, 0, sizeof(si_other));
