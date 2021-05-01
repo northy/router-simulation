@@ -32,20 +32,22 @@ void* sender(void* args) {
             pthread_mutex_lock(&dv_mutex);
 
             int dest_id = m->item.destination_router_id;
-            if (dest_id>=MAX_NEIGHBORS || dest_id<0 || distance_vector[router_id][dest_id]==-1) { //there's no route to follow
+            if (!m->item.type && (dest_id>=MAX_NEIGHBORS || dest_id<0 || distance_vector[router_id][dest_id]==-1)) { //there's no route to follow
                 free(m);
                 pthread_mutex_unlock(&dv_mutex);
                 continue;
             }
+            //if the message is a control message, send directly through the link.
+            int dest_dv_id = m->item.type ? dest_id : dv_source[dest_id];
+            pthread_mutex_unlock(&dv_mutex);
+
             memset((char *) &si_other, 0, sizeof(si_other));
             si_other.sin_family = AF_INET;
-            si_other.sin_port = htons(external_router_port[dv_source[dest_id]]);
-            if (inet_aton(external_router_ip[dv_source[dest_id]], &si_other.sin_addr) == 0) {
+            si_other.sin_port = htons(external_router_port[dest_dv_id]);
+            if (inet_aton(external_router_ip[dest_dv_id], &si_other.sin_addr) == 0) {
                 fprintf(stderr, "inet_aton() failed\n");
                 exit(1);
             }
-
-            pthread_mutex_unlock(&dv_mutex);
 
             //send the UDP packet
             if (sendto(socket_descriptor, &m->item, sizeof(m->item), 0, (struct sockaddr *) &si_other, slen)==-1) {
