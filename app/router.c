@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
 
     setvbuf(stdout, NULL, _IONBF, -1); //set the STDOUT buffer to flush immediately
 
+    memset(link_cost,-1,sizeof(link_cost));
     memset(link_enabled,1,sizeof(link_enabled));
 
     memset(dv_source,-1,sizeof(dv_source));
