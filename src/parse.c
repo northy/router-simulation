@@ -10,15 +10,11 @@ void parse_link() {
             if (link_cost[router2]!=-1) continue; //Already set, fixes file input dupe bug
             neighbors[(neighbors_c++)] = router2;
             link_cost[router2] = cost;
-            dv_source[router2] = router2; //TODO: Delete when receiving dynamically
-            distance_vector[router_id][router2] = cost; //TODO: Delete when receiving dynamically
         }
         if (router_id==router2) {
             if (link_cost[router1]!=-1) continue; //Already set, fixes file input dupe bug
             neighbors[(neighbors_c++)]=router1;
             link_cost[router1] = cost;
-            dv_source[router1] = router1; //TODO: Delete when receiving dynamically
-            distance_vector[router_id][router1] = cost; //TODO: Delete when receiving dynamically
         }
     }
 

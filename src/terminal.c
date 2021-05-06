@@ -150,12 +150,12 @@ void terminal_dvs() {
     printf("self:: ");
     for (int i=0; i<MAX_NEIGHBORS; ++i) {
         if (distance_vector[router_id][i]!=-1)
-            printf("%d:%d ", i, distance_vector[router_id][i]);
+            printf("%d:%d(%d) ", i, distance_vector[router_id][i], dv_source[i]);
     }
     printf("\n");
 
     for (int n=0; n<neighbors_c; ++n) {
-        if (!dv_valid[neighbors[n]]) continue;
+        if (!dv_valid[neighbors[n]] || !link_enabled[neighbors[n]]) continue;
         printf("%d:: ", neighbors[n]);
         for (int i=0; i<MAX_NEIGHBORS; ++i) {
             if (distance_vector[neighbors[n]][i]!=-1)
