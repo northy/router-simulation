@@ -36,7 +36,6 @@ void parse_router() {
         if (link_cost[id]!=-1) {
             external_router_port[id] = port;
             memcpy(external_router_ip[id],ip,sizeof(ip));
-            if (id-total_router_c>0) total_router_c=id;
         }
     }
 

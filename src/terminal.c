@@ -42,8 +42,14 @@ void terminal_send() {
     printf("Whom to send to:\n\n");
 
     pthread_mutex_lock(&dv_mutex);
-    for (int i=1; i<total_router_c+1; ++i) {
-        if (distance_vector[router_id][i]!=-1) printf("%d: (ip-port - %s:%hu) (cost - %d)\n", i, external_router_ip[i], external_router_port[i], distance_vector[router_id][i]);
+    for (int i=1; i<MAX_NEIGHBORS; ++i) {
+        if (distance_vector[router_id][i]==-1) continue;
+        if (external_router_port[i]) {
+            printf("%d: (ip-port - %s:%hu) (cost - %d)\n", i, external_router_ip[i], external_router_port[i], distance_vector[router_id][i]);
+        }
+        else {
+            printf("%d: (cost - %d)\n", i, distance_vector[router_id][i]);
+        }
     }
     pthread_mutex_unlock(&dv_mutex);
 
@@ -57,7 +63,7 @@ void terminal_send() {
 
     //invalid option
     pthread_mutex_lock(&dv_mutex);
-    if (choice<=0 || choice>total_router_c || distance_vector[router_id][choice]==-1) {
+    if (choice<=0 || choice>MAX_NEIGHBORS || distance_vector[router_id][choice]==-1) {
         pthread_mutex_unlock(&dv_mutex);
         return;
     }
@@ -99,7 +105,12 @@ void terminal_received() {
     erase();
     pthread_mutex_lock(&received_messages_mutex);
     while (received_messages_c--) {
-        printf("%d (%s:%hu) sent: %s\n", received_messages[received_messages_c].source_router_id, external_router_ip[received_messages[received_messages_c].source_router_id], external_router_port[received_messages[received_messages_c].source_router_id], received_messages[received_messages_c].payload);
+        if (external_router_port[received_messages[received_messages_c].source_router_id]) {
+            printf("%d (%s:%hu) sent: %s\n", received_messages[received_messages_c].source_router_id, external_router_ip[received_messages[received_messages_c].source_router_id], external_router_port[received_messages[received_messages_c].source_router_id], received_messages[received_messages_c].payload);
+        }
+        else {
+            printf("%d sent: %s\n", received_messages[received_messages_c].source_router_id, received_messages[received_messages_c].payload);
+        }
     }
     received_messages_c = 0;
     pthread_mutex_unlock(&received_messages_mutex);

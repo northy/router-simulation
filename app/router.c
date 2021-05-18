@@ -24,7 +24,6 @@ char link_cost[MAX_NEIGHBORS];
 char link_enabled[MAX_NEIGHBORS];
 int neighbors_c=0, neighbors[MAX_NEIGHBORS];
 
-int total_router_c=0;
 unsigned short external_router_port[MAX_NEIGHBORS];
 char external_router_ip[MAX_NEIGHBORS][16];
 
@@ -63,6 +62,8 @@ int main(int argc, char *argv[]) {
 
     memset(link_cost,-1,sizeof(link_cost));
     memset(link_enabled,1,sizeof(link_enabled));
+
+    memset(external_router_port,0,sizeof(external_router_port));
 
     memset(dv_source,-1,sizeof(dv_source));
     memset(dv_valid,0,sizeof(dv_valid));

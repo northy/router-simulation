@@ -17,7 +17,6 @@ extern char link_enabled[MAX_NEIGHBORS];
 extern int neighbors_c, neighbors[MAX_NEIGHBORS];
 
 //external route
-extern int total_router_c;
 extern unsigned short external_router_port[MAX_NEIGHBORS];
 extern char external_router_ip[MAX_NEIGHBORS][16];
 
