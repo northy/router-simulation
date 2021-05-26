@@ -2,7 +2,7 @@
     <img width="400" height="100" src="logo.jpg" title="Project Logo"><br />
     <img src="https://img.shields.io/maintenance/yes/2021?style=for-the-badge" title="Project status">
     <img src="https://img.shields.io/badge/platform-linux-lightgray?style=for-the-badge" title="Platform">
-    <img src="https://img.shields.io/github/workflow/status/northy/router-simulation/compile?style=for-the-badge" title="Build status">
+    <img src="https://img.shields.io/github/workflow/status/northy/router-simulation/Compile%20the%20project?style=for-the-badge" title="Build status">
 </p>
 
 # Router Simulation
